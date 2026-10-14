@@ -1,8 +1,9 @@
 package org.example.repository;
 
 import org.example.model.Student;
-
+import java.sql.PreparedStatement;
 import java.sql.*;
+import java.util.Scanner;
 
 public class StudentRepository
 {
@@ -16,7 +17,15 @@ public class StudentRepository
         {
             Connection connection = DriverManager.getConnection(url,user,password);
             Statement statement = connection.createStatement();
-            String sql = "Insert into students(name,email,age) VALUES('Raj','raj123@gmail.com',26)";
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Enter Student Name");
+            String name = sc.next();
+            System.out.print("Enter Student Email");
+            String email = sc.next();
+            System.out.print("Enter Student Age");
+            int age = sc.nextInt();
+
+            String sql = "Insert into students(name,email,age) VALUES(name,email,age)";
             int res = statement.executeUpdate(sql); // executeUpdate use for CREATE, UPDATE , DELETE
                                             // executeQuery use for READ
                                             // execute use for General Purpose (CRUD) i.e Every way
@@ -39,12 +48,63 @@ public class StudentRepository
         {
             Connection connection = DriverManager.getConnection(url,user,password);
             Statement statement = connection.createStatement();
-            String sql = "UPDATE students set age=30 where id = 1";
-            int res = statement.executeUpdate(sql);
-            if (res == 1)
-                System.out.println("Successfully updated into students");
-            else
-                System.out.println("Failed to update into students");
+            while (true) {
+                Scanner sc = new Scanner(System.in);
+                System.out.println("Press 1 Name \t Press 2 Email ");
+                System.out.println("Press 3 Age   ");
+                System.out.println("Press 0 EXIT");
+                System.out.print("\t Select Option for Update :\t");
+                int otp1 = sc.nextInt();
+                if (otp1 == 0) {
+                    break;
+                }
+                if (otp1 == 1) {
+                    System.out.print("Enter Student ID : ");
+                    int A = sc.nextInt();
+                    System.out.print("Enter Student Name : ");
+                    String N = sc.next();
+                    String sql = "UPDATE students SET name = ? WHERE id = ?";
+                    PreparedStatement ps = connection.prepareStatement(sql);
+                    ps.setString(1, N);
+                    ps.setInt(2, A);
+                    int res = ps.executeUpdate();
+                    if (res == 1)
+                        System.out.println("Name Update Successfully into students");
+                    else
+                        System.out.println("Failed to update into students");
+                } else if (otp1 == 2) {
+                    System.out.print("Enter Student ID : ");
+                    int A = sc.nextInt();
+                    System.out.print("Enter Student Email : ");
+                    String E = sc.next();
+                    String sql = "UPDATE students SET email = ? WHERE id = ?";
+                    PreparedStatement ps = connection.prepareStatement(sql);
+                    ps.setString(1, E);
+                    ps.setInt(2, A);
+                    int res = ps.executeUpdate();
+                    if (res == 1)
+                        System.out.println("Email Update Successfully into students");
+                    else
+                        System.out.println("Failed to update into students");
+                } else if (otp1 == 3) {
+                    System.out.print("Enter Student ID : ");
+                    int A = sc.nextInt();
+                    System.out.print("Enter Student Age : ");
+                    int A1 = sc.nextInt();
+                    String sql = "UPDATE students SET age = ? WHERE id = ?";
+                    PreparedStatement ps = connection.prepareStatement(sql);
+                    ps.setInt(1, A1);
+                    ps.setInt(2, A);
+
+                    int res = ps.executeUpdate();
+                    if (res == 1)
+                        System.out.println("Age Update Successfully into students");
+                    else
+                        System.out.println("Failed to update into students");
+                } else {
+                    System.out.println("Invalid Input");
+                }
+            }
             connection.close();
         }
         catch (SQLException e)
