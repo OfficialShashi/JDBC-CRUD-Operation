@@ -13,10 +13,12 @@ public class StudentRepository
 
     public void createUser()
     {
-        try
+        String sql = "Insert into students(name,email,age) VALUES(?,?,?)";
+        try(
+                Connection connection = DriverManager.getConnection(url,user,password);
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                )
         {
-            Connection connection = DriverManager.getConnection(url,user,password);
-            Statement statement = connection.createStatement();
             Scanner sc = new Scanner(System.in);
             System.out.print("Enter Student Name");
             String name = sc.next();
@@ -24,17 +26,17 @@ public class StudentRepository
             String email = sc.next();
             System.out.print("Enter Student Age");
             int age = sc.nextInt();
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, email);
+            preparedStatement.setInt(3, age);
 
-            String sql = "Insert into students(name,email,age) VALUES(name,email,age)";
-            int res = statement.executeUpdate(sql); // executeUpdate use for CREATE, UPDATE , DELETE
+            int res = preparedStatement.executeUpdate(); // executeUpdate use for CREATE, UPDATE , DELETE
                                             // executeQuery use for READ
                                             // execute use for General Purpose (CRUD) i.e Every way
             if (res == 1)
                 System.out.println("Successfully inserted into students");
             else
                 System.out.println("Failed to insert into students");
-
-            connection.close();
         }catch (SQLException e)
         {
             System.out.println("Connection Failed");
@@ -116,12 +118,13 @@ public class StudentRepository
 
     public void getreadUserById()
     {
-        try
+        String sql = "select * from students";
+        try(Connection connection = DriverManager.getConnection(url,user,password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            )
         {
-            Connection connection = DriverManager.getConnection(url,user,password);
-            Statement statement = connection.createStatement();
-            String sql = "select * from students";
-            ResultSet rt = statement.executeQuery(sql);
+
+            ResultSet rt = preparedStatement.executeQuery();
             while(rt.next())
             {
                 Student student = mapRow(rt);
@@ -148,12 +151,16 @@ public class StudentRepository
 
     public void DeleteUser()
     {
-        try
+        String sql = "delete from students where id = ?";
+        Scanner sc = new Scanner(System.in);
+        try(Connection connection = DriverManager.getConnection(url,user,password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            )
         {
-            Connection connection = DriverManager.getConnection(url,user,password);
-            Statement statement = connection.createStatement();
-            String sql = "delete from students where id = 1";
-            int res = statement.executeUpdate(sql);
+            System.out.print("Enter Student ID : ");
+            int A = sc.nextInt();
+            preparedStatement.setInt(1, A);
+            int res = preparedStatement.executeUpdate();
             if (res == 1)
                 System.out.println("Successfully deleted from students");
             else
